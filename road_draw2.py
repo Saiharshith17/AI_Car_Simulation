@@ -2,15 +2,16 @@ import math
 import sys
 import pygame
 import neat
-
+import pickle
 # Constants
 WIDTH = 1920
 HEIGHT = 1080
 CAR_SIZE_X = 60
 CAR_SIZE_Y = 60
-BORDER_COLOR = (255, 255, 255, 255)  # Color To Crash on Hit
-
-current_generation = 0  # Generation counter
+BORDER_COLOR = (255, 255, 255, 255)  
+best_genome=None
+best_fitness=-1
+current_generation = 0  
 
 # User-defined configurations
 def get_user_configurations():
@@ -169,6 +170,7 @@ class Car:
 
 def run_simulation(genomes, config):
     # Empty Collections For Nets and Cars
+    global best_genome,best_fitness
     nets = []
     cars = []
 
@@ -187,7 +189,7 @@ def run_simulation(genomes, config):
     clock = pygame.time.Clock()
     generation_font = pygame.font.SysFont("Arial", 30)
     alive_font = pygame.font.SysFont("Arial", 20)
-    game_map = pygame.image.load('map4.png').convert()  # Convert Speeds Up A Lot
+    game_map = pygame.image.load('map5.png').convert()  # Convert Speeds Up A Lot
 
     global current_generation
     current_generation += 1
@@ -223,6 +225,11 @@ def run_simulation(genomes, config):
                 still_alive += 1
                 car.update(game_map)
                 genomes[i][1].fitness += car.get_reward()
+
+                # Update best genome
+                if genomes[i][1].fitness>best_fitness:
+                    best_fitness=genomes[i][1].fitness
+                    best_genome=genomes[i][1]
 
         if still_alive == 0:
             break
@@ -269,3 +276,12 @@ if __name__ == "__main__":
 
     # Run Simulation For A Maximum of User-Defined Generations
     population.run(run_simulation, user_config["num_generations"])
+    
+
+
+    if best_genome is not None:
+        with open("best_genome.pkl","wb") as f:
+            pickle.dump(best_genome,f)
+        print(f"Best genome saved with fitness: {best_fitness}")
+    else:
+        print("No best genome found")

@@ -20,7 +20,7 @@ screen.fill(WHITE)
 pygame.draw.circle(screen, RED, (820, 930), 5)
 
 drawing = False  # Track if the user is drawing
-road_width = 45  # Radius of the circles to form roads
+road_width = 35  # Radius of the circles to form roads
 points_set=set()
 
 running = True
