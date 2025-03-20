@@ -1,14 +1,6 @@
 import mysql.connector
 import json
 
-# Database Configuration
-db_config = {
-    "host": "localhost",
-    "user": "root",
-    "password": "1122",
-    "database": "example"
-}
-
 file_path = "coordinates.json"
 
 def load_coordinates_from_file(file_path):
@@ -18,11 +10,11 @@ def load_coordinates_from_file(file_path):
             data = json.load(file)
             return (
                 data["coordinates"], 
-                data["speed"], 
-                data["acceleration"], 
-                data["max_speed"], 
-                data["deceleration"], 
-                data["turning_angle"]
+                round(data["speed"], 2), 
+                round(data["acceleration"], 2), 
+                round(data["max_speed"], 2), 
+                round(data["deceleration"], 2), 
+                round(data["turning_angle"], 2)
             )
     except (FileNotFoundError, json.JSONDecodeError) as e:
         print("Error loading JSON file:", e)
@@ -35,18 +27,22 @@ def get_model_weights(coordinates, speed, acceleration, max_speed, deceleration,
         return
 
     try:
-        conn = mysql.connector.connect(**db_config)
+        conn = mysql.connector.connect(
+            host="localhost",
+            user="root",
+            password="1122",
+            database="example"
+        )
         cursor = conn.cursor()
 
-        # Ensure JSON format in the query
         query = """
         SELECT weight_data FROM maps 
         WHERE JSON_CONTAINS(coordinates, CAST(%s AS JSON))
-        AND speed = %s
-        AND acceleration = %s
-        AND max_speed = %s
-        AND deceleration = %s
-        AND turning_angle = %s
+        AND ROUND(speed, 2) = ROUND(%s, 2)
+        AND ROUND(acceleration, 2) = ROUND(%s, 2)
+        AND ROUND(max_speed, 2) = ROUND(%s, 2)
+        AND ROUND(deceleration, 2) = ROUND(%s, 2)
+        AND ROUND(turning_angle, 2) = ROUND(%s, 2)
         LIMIT 1;
         """
         cursor.execute(query, (json.dumps(coordinates), speed, acceleration, max_speed, deceleration, turning_angle))
@@ -61,7 +57,7 @@ def get_model_weights(coordinates, speed, acceleration, max_speed, deceleration,
 
     except mysql.connector.Error as err:
         print("Database error:", err)
-
+    
     finally:
         cursor.close()
         conn.close()
@@ -69,7 +65,7 @@ def get_model_weights(coordinates, speed, acceleration, max_speed, deceleration,
 # Load data from JSON file
 if __name__ == "__main__":
     coordinates, speed, acceleration, max_speed, deceleration, turning_angle = load_coordinates_from_file(file_path)
-
+    
     if coordinates is not None:
         weights = get_model_weights(coordinates, speed, acceleration, max_speed, deceleration, turning_angle)
         if weights:
