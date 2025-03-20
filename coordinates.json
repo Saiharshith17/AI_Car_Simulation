@@ -1,0 +1,17 @@
+{
+  "coordinates": [
+      {"lat": 40.7128, "lng": -74.0060},
+      {"lat": 40.7130, "lng": -74.0062},
+      {"lat": 40.7132, "lng": -74.0064},
+      {"lat": 40.7134, "lng": -74.0066},
+      {"lat": 40.7136, "lng": -74.0068}
+  ],
+  "speed": 45.0,
+  "acceleration": 3.2,
+  "max_speed": 80.0,
+  "deceleration": 2.1,
+  "turning_angle": 25.0
+}
+
+
+  
