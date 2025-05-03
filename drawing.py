@@ -37,7 +37,7 @@ while running:
         elif event.type == pygame.MOUSEBUTTONUP:  # Stop drawing, save & exit
             drawing = False
             if not saved:
-                pygame.image.save(screen, "road_map.png")  # Save only once
+                pygame.image.save(screen, "map1.png")  # Save only once
                 saved = True
                 running = False  # Exit the loop
 

@@ -3,6 +3,8 @@ import sys
 import pygame
 import neat
 import pickle
+import matplotlib.pyplot as plt
+import numpy as np
 
 # Constants
 WIDTH = 1920
@@ -16,6 +18,11 @@ current_generation = 0
 START_POSITION = [830, 920]
 GOAL_RADIUS = 30
 
+# Lists to store generation and fitness data for plotting
+generation_history = []
+max_fitness_history = []
+avg_fitness_history = []
+
 # User-defined configurations
 def get_user_configurations():
     print("Enter the following configurations:")
@@ -25,7 +32,7 @@ def get_user_configurations():
     max_speed = float(input("Maximum Speed (default 30): ") or 30)
     turning_angle = float(input("Turning Angle (default 10): ") or 10)
     simulation_time = int(input("Simulation Time per Generation (default 20 seconds): ") or 20)
-    num_generations = int(input("Number of Generations (default 50): ") or 50)
+    num_generations = int(input("Number of Generations (default 20): ") or 20)
 
     return {
         "initial_speed": initial_speed,
@@ -167,8 +174,11 @@ class Car:
         return self.alive
 
     def get_reward(self):
-        # Calculate Reward (Maybe Change?)
-        return self.distance / (CAR_SIZE_X / 2)
+        bonus = 10000 if self.completed_loop else 0
+        crash_penalty = 5000 if not self.alive else 0
+        speed_reward = self.speed * 10
+        distance_reward = self.distance / (CAR_SIZE_X)
+        return distance_reward + bonus + speed_reward - crash_penalty
 
     def rotate_center(self, image, angle):
         # Rotate The Rectangle
@@ -181,7 +191,8 @@ class Car:
 
 
 def run_simulation(genomes, config):
-    global best_genome, best_fitness
+    global best_genome, best_fitness, current_generation
+    global generation_history, max_fitness_history, avg_fitness_history
 
     nets = []
     cars = []
@@ -201,9 +212,8 @@ def run_simulation(genomes, config):
     clock = pygame.time.Clock()
     generation_font = pygame.font.SysFont("Arial", 30)
     alive_font = pygame.font.SysFont("Arial", 20)
-    game_map = pygame.image.load('map4.png').convert()  # Convert Speeds Up A Lot
+    game_map = pygame.image.load(r'maps\map2.png').convert()  # Convert Speeds Up A Lot
 
-    global current_generation
     current_generation += 1
 
     # Simple Counter To Roughly Limit Time
@@ -212,6 +222,7 @@ def run_simulation(genomes, config):
 
     while True:
         # Exit On Quit Event
+        
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 sys.exit(0)
@@ -220,6 +231,7 @@ def run_simulation(genomes, config):
         for i, car in enumerate(cars):
             output = nets[i].activate(car.get_data())
             choice = output.index(max(output))
+            
             if choice == 0:
                 car.angle += car.turning_angle  # Left
             elif choice == 1:
@@ -275,11 +287,46 @@ def run_simulation(genomes, config):
 
     # Save the best genome only if the loop was completed
     if best_genome is not None and any(car.completed_loop for car in cars):
-        with open("best_genome.pkl", "wb") as f:
+        with open("best_genome1.pkl", "wb") as f:
             pickle.dump(best_genome, f)
         print(f"Best genome saved with fitness: {best_fitness}")
     else:
-        print("No car completed the loop. Best genome not saved.")
+        print("No car completed the loop in this generation.")
+
+    # Calculate and store fitness statistics for this generation
+    print(len(genomes))
+    if genomes:
+        generation_history.append(current_generation)
+        fitness_values = [genome[1].fitness for genome in genomes]
+        max_fitness = max(fitness_values)
+        summ=0
+        for fitness_value in fitness_values:
+            if fitness_value>0:
+                summ=summ+fitness_value
+        avg_fitness=summ/len(fitness_values)
+        
+        max_fitness_history.append(max_fitness)
+        avg_fitness_history.append(avg_fitness)
+        
+        print(f"Generation {current_generation}: Max Fitness = {max_fitness:.2f}, Avg Fitness = {avg_fitness:.2f}")
+
+
+def plot_fitness_progression(name):
+    """Plot the progression of fitness over generations"""
+    plt.figure(figsize=(12, 6))
+    if name=="max":
+        # Plot max fitness
+        plt.plot(generation_history, max_fitness_history, 'b-', label='Best Fitness Over Generations', linewidth=2)
+        plt.xlabel('Generation', fontsize=12)
+        plt.ylabel('Fitness', fontsize=12)
+        plt.title('Best Fitness Over Generations', fontsize=14)
+    if name=="average":
+        # Plot average fitness
+        plt.plot(generation_history, avg_fitness_history, 'b-', label='Average Fitness Over Generations', linewidth=2)
+        plt.xlabel('Generation', fontsize=12)
+        plt.ylabel('Fitness', fontsize=12)
+        plt.title('Average Fitness Over Generations', fontsize=14)
+    plt.show()
 
 
 if __name__ == "__main__":
@@ -299,3 +346,16 @@ if __name__ == "__main__":
 
     # Run Simulation For A Maximum of User-Defined Generations
     population.run(run_simulation, user_config["num_generations"])
+    
+    # After all generations are complete, plot the fitness progression
+    plot_fitness_progression(name="max")
+    plot_fitness_progression(name="average")
+    
+    # Print summary of training
+    print("\n===== Training Summary =====")
+    print(f"Total Generations: {current_generation}")
+    print(f"Best Fitness Achieved: {best_fitness}")
+    if best_genome is not None:
+        print("Best genome was saved to 'best_genome1.pkl'")
+    else:
+        print("No car completed the loop during training.")
