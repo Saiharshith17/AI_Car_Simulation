@@ -24,3 +24,15 @@ This project is a Python-based simulation of a self-driving car that uses the NE
 
 ```bash
 pip install pygame neat-python matplotlib numpy
+
+## Default Simulation Parameters
+
+| Parameter               | Default Value | Description                                  |
+|------------------------|---------------|----------------------------------------------|
+| Initial Speed (v)     | 2.0           | Initial speed of each car                    |
+| Acceleration (a)      | 0.2           | How quickly the car speeds up                |
+| Deceleration (d)      | 0.3           | How quickly the car slows down               |
+| Maximum Speed (max_v) | 7.0           | The upper limit for the car's speed          |
+| Angle Increment (angle_inc) | 5       | Rotation angle per step in degrees           |
+| Time per Generation (max_time) | 20    | Number of seconds for each generation        |
+| Number of Generations (gens) | 30      | Total number of generations to evolve        |
