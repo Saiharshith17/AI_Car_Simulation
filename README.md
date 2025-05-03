@@ -20,10 +20,6 @@ This project is a Python-based simulation of a self-driving car that uses the NE
 - Matplotlib
 - NumPy
 
-### Install Dependencies
-
-```bash
-pip install pygame neat-python matplotlib numpy
 
 ## Default Simulation Parameters
 
@@ -36,3 +32,9 @@ pip install pygame neat-python matplotlib numpy
 | Angle Increment (angle_inc) | 5       | Rotation angle per step in degrees           |
 | Time per Generation (max_time) | 20    | Number of seconds for each generation        |
 | Number of Generations (gens) | 30      | Total number of generations to evolve        |
+
+### Install Dependencies
+
+```bash
+pip install pygame neat-python matplotlib numpy
+
