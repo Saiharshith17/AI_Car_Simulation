@@ -61,7 +61,7 @@ map4
 
 map5
 ## Random map 
-<img src="https://github.com/tejatanush/AI_CAR_SIMULATION_USING_NEAT/blob/main/maps/map3.png" alt="Architecture Diagram" width="100%"/>
+<img src="https://raw.githubusercontent.com/tejatanush/AI_CAR_SIMULATION_USING_NEAT/blob/main/maps/map3.png" alt="Architecture Diagram" width="100%"/>
 
 ## 3.Specify the default values of the input parameters
 
