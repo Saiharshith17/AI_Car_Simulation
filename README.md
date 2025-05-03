@@ -42,7 +42,7 @@ Follow the steps below to set up the environment, install dependencies, select a
 
 First, clone the repository to your local machine using Git:
 
-bash
+
 git clone <repository_url>
 cd <repository_folder>  
 cd <main.py>
@@ -69,8 +69,7 @@ map5
     "max_time": 25,     # Time per generation (seconds) 
     "gens": 30          # Number of generations
  
-4. Run the main.py
-``bash
+## 4. Run the main.py
   python main.py
 ### Install Dependencies
 
