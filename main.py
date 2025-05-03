@@ -5,6 +5,7 @@ import neat
 import pickle
 import matplotlib.pyplot as plt
 import numpy as np
+import os
 
 # Constants
 WIDTH = 1920
@@ -26,6 +27,16 @@ avg_fitness_history = []
 # User-defined configurations
 def get_user_configurations():
     print("Enter the following configurations:")
+    
+    # Map selection
+    while True:
+        map_selection = input("Select map (1-5, default is 1): ") or "1"
+        if map_selection in ["1", "2", "3", "4", "5"]:
+            map_path = f"maps/map{map_selection}.png"
+            break
+        else:
+            print("Invalid map selection. Please choose a number between 1 and 5.")
+    
     initial_speed = float(input("Initial Speed (default 20): ") or 20)
     acceleration = float(input("Acceleration Rate (default 2): ") or 2)
     deceleration = float(input("Deceleration Rate (default 2): ") or 2)
@@ -33,8 +44,9 @@ def get_user_configurations():
     turning_angle = float(input("Turning Angle (default 10): ") or 10)
     simulation_time = int(input("Simulation Time per Generation (default 20 seconds): ") or 20)
     num_generations = int(input("Number of Generations (default 20): ") or 20)
-
+    
     return {
+        "map_path": map_path,
         "initial_speed": initial_speed,
         "acceleration": acceleration,
         "deceleration": deceleration,
@@ -189,7 +201,6 @@ class Car:
         rotated_image = rotated_image.subsurface(rotated_rectangle).copy()
         return rotated_image
 
-
 def run_simulation(genomes, config):
     global best_genome, best_fitness, current_generation
     global generation_history, max_fitness_history, avg_fitness_history
@@ -212,7 +223,15 @@ def run_simulation(genomes, config):
     clock = pygame.time.Clock()
     generation_font = pygame.font.SysFont("Arial", 30)
     alive_font = pygame.font.SysFont("Arial", 20)
-    game_map = pygame.image.load(r'maps\map2.png').convert()  # Convert Speeds Up A Lot
+    
+    # Load the selected map
+    try:
+        game_map = pygame.image.load(user_config["map_path"]).convert()
+        map_number = user_config["map_path"].split("map")[1].split(".")[0]
+        print(f"Map {map_number} loaded successfully!")
+    except FileNotFoundError:
+        print(f"Error: Map file {user_config['map_path']} not found! Using default map1.png")
+        game_map = pygame.image.load("maps/map1.png").convert()
 
     current_generation += 1
 
@@ -222,7 +241,6 @@ def run_simulation(genomes, config):
 
     while True:
         # Exit On Quit Event
-        
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 sys.exit(0)
@@ -282,14 +300,22 @@ def run_simulation(genomes, config):
         text_rect.center = (900, 490)
         screen.blit(text, text_rect)
 
+        # Display selected map
+        map_text = alive_font.render(f"Map: {user_config['map_path'].split('/')[-1]}", True, (0, 0, 0))
+        map_text_rect = map_text.get_rect()
+        map_text_rect.center = (900, 530)
+        screen.blit(map_text, map_text_rect)
+
         pygame.display.flip()
         clock.tick(60)  # 60 FPS
 
     # Save the best genome only if the loop was completed
     if best_genome is not None and any(car.completed_loop for car in cars):
-        with open("best_genome1.pkl", "wb") as f:
+        map_number = user_config["map_path"].split("map")[1].split(".")[0]
+        filename = f"best_genome_map{map_number}.pkl"
+        with open(filename, "wb") as f:
             pickle.dump(best_genome, f)
-        print(f"Best genome saved with fitness: {best_fitness}")
+        print(f"Best genome saved with fitness: {best_fitness} as {filename}")
     else:
         print("No car completed the loop in this generation.")
 
@@ -326,6 +352,10 @@ def plot_fitness_progression(name):
         plt.xlabel('Generation', fontsize=12)
         plt.ylabel('Fitness', fontsize=12)
         plt.title('Average Fitness Over Generations', fontsize=14)
+    
+    # Save plot with map number in filename
+    map_number = user_config["map_path"].split("map")[1].split(".")[0]
+    plt.savefig(f"{name}_fitness_map{map_number}.png")
     plt.show()
 
 
@@ -355,7 +385,12 @@ if __name__ == "__main__":
     print("\n===== Training Summary =====")
     print(f"Total Generations: {current_generation}")
     print(f"Best Fitness Achieved: {best_fitness}")
-    if best_genome is not None:
-        print("Best genome was saved to 'best_genome1.pkl'")
+    print(f"Map Used: {user_config['map_path']}")
+    
+    map_number = user_config["map_path"].split("map")[1].split(".")[0]
+    filename = f"best_genome_map{map_number}.pkl"
+    
+    if best_genome is not None and os.path.exists(filename):
+        print(f"Best genome was saved to '{filename}'")
     else:
         print("No car completed the loop during training.")
