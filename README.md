@@ -33,6 +33,45 @@ This project is a Python-based simulation of a self-driving car that uses the NE
 | Time per Generation (max_time) | 20    | Number of seconds for each generation        |
 | Number of Generations (gens) | 30      | Total number of generations to evolve        |
 
+
+# How to Make the Self-Driving Car Simulation Work
+
+Follow the steps below to set up the environment, install dependencies, select a map, and run the self-driving car simulation.
+
+## 1. Clone the Repository
+
+First, clone the repository to your local machine using Git:
+
+bash
+git clone <repository_url>
+cd <repository_folder>  
+cd <main.py>
+## 2. select maps from the available ones 
+Available Maps:
+map1
+
+map2
+
+map3
+
+map4
+
+map5
+
+
+## 3.Specify the default values of the input parameters
+
+    "v": 2.0,           # Initial speed
+    "a": 0.2,           # Acceleration
+    "d": 0.3,           # Deceleration
+    "max_v": 7.0,       # Maximum speed
+    "angle_inc": 5,     # Angle increment (degrees)
+    "max_time": 25,     # Time per generation (seconds) 
+    "gens": 30          # Number of generations
+ 
+4. Run the main.py
+``bash
+  python main.py
 ### Install Dependencies
 
 ```bash
