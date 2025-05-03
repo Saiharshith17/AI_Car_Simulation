@@ -44,7 +44,9 @@ First, clone the repository to your local machine using Git:
 
 
 git clone <repository_url>
+<space><space>
 cd <repository_folder>  
+<space><space>
 cd <main.py>
 ## 2. select maps from the available ones 
 Available Maps:
