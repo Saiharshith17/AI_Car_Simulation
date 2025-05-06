@@ -48,8 +48,6 @@ class Car:
         self.start_position = START_POSITION
         self.completed_loop = False
 
-
-
         # Starting Position
         self.position = [830, 920]
         self.angle = 0
