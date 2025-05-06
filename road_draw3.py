@@ -37,7 +37,6 @@ def get_user_configurations():
         "num_generations": num_generations,
     }
 
-
 user_config = get_user_configurations()
 
 class Car:
