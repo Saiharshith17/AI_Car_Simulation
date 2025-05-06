@@ -39,8 +39,6 @@ def get_user_configurations():
 
 user_config = get_user_configurations()
 
-
-
 class Car:
     def __init__(self):
         # Load Car Sprite and Rotate
