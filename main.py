@@ -7,6 +7,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import os
 
+
+
 # Constants
 WIDTH = 1920
 HEIGHT = 1080
